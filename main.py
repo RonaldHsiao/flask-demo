@@ -21,7 +21,10 @@ def pm25_data():
     #取得最高跟最低得數據
     sorted_data = sorted(values,key=lambda x:x[2])
 
-    result = json.dumps({"datetime":datetime,"site":site,"pm25":pm25},ensure_ascii=False)
+    lowest = {"site":sorted_data[0][0], "pm25":sorted_data[0][2]}
+    highest = {"site":sorted_data[-1][0], "pm25":sorted_data[-1][2]}
+
+    result = json.dumps({"datetime":datetime,"site":site,"pm25":pm25,"lowest":lowest,"highest":highest},ensure_ascii=False)
     return result
 
 @app.route("/pm25")
