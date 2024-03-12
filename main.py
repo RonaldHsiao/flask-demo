@@ -11,17 +11,14 @@ app = Flask(__name__)
 def pm25_charts():
     return render_template("pm25-charts.html")
 
-@app.route("/pm25-data", methods=["GET"])
+@app.route("/pm25-data",methods=["GET"])
 def pm25_data():
     columns, values = get_pm25()
-    site = [value[0] for value in values]
-    pm25 = [value[2] for value in values]
-    datetime = values[0][-2]
+    site = [ value[0] for value in values]
+    pm25 = [ value[2] for value in values]
+    datetime = [values[0][-2]]
 
-    result = json.dumps(
-        {"datetime": datetime, "site": site, "pm25": pm25}, ensure_ascii=False
-    )
-
+    result = json.dumps({"datetime":datetime,"site":site,"pm25":pm25},ensure_ascii=False)
     return result
 
 @app.route("/pm25")
