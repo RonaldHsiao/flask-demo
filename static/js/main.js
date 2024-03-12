@@ -1,45 +1,91 @@
 // 取得主繪製區域
-const myChart = echarts.init(document.getElementById('main'));
+const chart1 = echarts.init(document.getElementById('main'));
+const chart2 = echarts.init(document.getElementById('six'));
+const chart3 = echarts.init(document.getElementById('county'));
 
 $("#update").click(() => {
-    
+    drawPM25();
 });
 
-
-
-
-
-
-
+//select選擇option時的監聽
+$("#select_county").change(() => {
+    //val=>value (選擇的option value)
+    county = $("#select_county").val();
+    //console.log(county);
+    drawCountyPM25(county);
+});
 
 // 呼叫後端資料跟繪製
 drawPM25();
 
+function drawCountyPM25(county) {
+    chart3.showLoading();
+    $.ajax(
+        {
+            url: `/county-pm25-data/${county}`,
+            type: "GET",
+            dataType: "json",
+            success: (result) => {
+                //繪製對應區塊並給予必要參數
+                drawChat(chart3, county, "PM2.5", result["site"], result["pm25"]);
+                chart3.hideLoading();
+            },
+            error: () => {
+                alert("讀取資料失敗，請稍後在試!");
+                chart3.hideLoading();
+            }
+        }
+    )
+}
+
+
+function drawSixPM25() {
+    chart2.showLoading();
+    $.ajax(
+        {
+            url: "/six-pm25-data",
+            type: "GET",
+            dataType: "json",
+            success: (result) => {
+                //繪製對應區塊並給予必要參數
+                drawChat(chart2, "六都PM2.5平均值", "PM2.5", result["site"], result["pm25"]);
+                chart2.hideLoading();
+            },
+            error: () => {
+                alert("讀取資料失敗，請稍後在試!");
+                chart2.hideLoading();
+            }
+        }
+    )
+}
+
 // 取得後端資料
 function drawPM25() {
-    myChart.showLoading();
+    chart1.showLoading();
     $.ajax(
         {
             url: "/pm25-data",
             type: "GET",
             dataType: "json",
             success: (result) => {
-                $("#pm25_high_site").text(result["highest"]["site"])
-                $("#pm25_high_value").text(result["highest"]["pm25"])
-                $("#pm25_low_site").text(result["lowest"]["site"])
-                $("#pm25_low_value").text(result["lowest"]["pm25"])
-                // document.querySelector("#pm25_high_site").innerText = result["highest"]["site"];
-                // document.querySelector("#pm25_high_value").innerText = result["highest"]["pm25"];
-                // document.querySelector("#pm25_low_site").innerText = result["lowest"]["site"];
-                // document.querySelector("#pm25_low_site").innerText = result["lowest"]["pm25"];
-                //console.log(result);
-                //繪製對應區塊並給予必要參數
-                drawChat(myChart, result["datetime"], "PM2.5", result["site"], result["pm25"])
-                myChart.hideLoading();
+                this.setTimeout(() => {
+                    $("#pm25_high_site").text(result["highest"]["site"]);
+                    $("#pm25_high_value").text(result["highest"]["pm25"]);
+                    $("#pm25_low_site").text(result["lowest"]["site"]);
+                    $("#pm25_low_value").text(result["lowest"]["pm25"]);
+                    //繪製對應區塊並給予必要參數
+                    drawChat(chart1, result["datetime"], "PM2.5", result["site"], result["pm25"]);
+                    chart1.hideLoading();
+                    this.setTimeout(() => {
+                        //繪製六都平均值
+                        drawSixPM25();
+                        drawCountyPM25("彰化縣");
+                    }, 1000);
+                }, 1000);
             },
-            error :()=>{
-                alert("讀取失敗");
-                myChart.hideLoading();
+            error: () => {
+                alert("讀取資料失敗，請稍後在試!");
+                chart1.hideLoading();
             }
         }
     )
