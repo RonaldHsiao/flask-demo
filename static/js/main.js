@@ -15,6 +15,14 @@ $("#select_county").change(() => {
     drawCountyPM25(county);
 });
 
+window.onresize = function () {
+    chart1.resize();
+    chart2.resize();
+    chart3.resize();
+};
+
+
+
 // 呼叫後端資料跟繪製
 drawPM25();
 
@@ -27,7 +35,7 @@ function drawCountyPM25(county) {
             dataType: "json",
             success: (result) => {
                 //繪製對應區塊並給予必要參數
-                drawChat(chart3, county, "PM2.5", result["site"], result["pm25"]);
+                drawChat(chart3, county, "PM2.5", result["site"], result["pm25"],"green");
                 chart3.hideLoading();
             },
             error: () => {
@@ -48,7 +56,7 @@ function drawSixPM25() {
             dataType: "json",
             success: (result) => {
                 //繪製對應區塊並給予必要參數
-                drawChat(chart2, "六都PM2.5平均值", "PM2.5", result["site"], result["pm25"]);
+                drawChat(chart2, "六都PM2.5平均值", "PM2.5", result["site"], result["pm25"],"blue");
                 chart2.hideLoading();
             },
             error: () => {
@@ -91,7 +99,7 @@ function drawPM25() {
     )
 }
 
-function drawChat(chart, title, legend, xData, yData) {
+function drawChat(chart, title, legend, xData, yData,color='#a90000') {
     let option = {
         title: {
             text: title
@@ -108,7 +116,10 @@ function drawChat(chart, title, legend, xData, yData) {
             {
                 name: legend,
                 type: 'bar',
-                data: yData
+                data: yData,
+                itemStyle: {
+                    color: color
+                  }
             }
         ]
     };

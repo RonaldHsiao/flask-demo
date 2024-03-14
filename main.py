@@ -132,7 +132,7 @@ def index():
     print(datetime.now())
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-    return render_template("index.html", time=now, name="jerry")
+    return render_template("index.html", time=now, name="Ronald")
 
 
 # print(pm25_data())
